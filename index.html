@@ -3,247 +3,491 @@
 <html lang="tl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NovaShare</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6f4638">
+<title>NovaBackup</title>
 <style>
 :root {
-  --bg:#fdf8f2;
-  --card:#fffdf9;
-  --brown:#795548;
-  --text:#382b25;
-  --muted:#89776b;
-  --line:#eaded2;
+  --coffee:#76503e;
+  --dark:#4a3027;
+  --accent:#a8785d;
+  --cream:#fffaf4;
+  --paper:#f4e9dc;
+  --line:#e6d5c4;
+  --muted:#927b6b;
+  --danger:#b74336;
 }
-*{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);color:var(--text);
-  font-family:Arial,sans-serif;
+* {box-sizing:border-box}
+body {
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:var(--cream);
+  color:var(--dark);
 }
-header{
-  padding:22px 16px;background:var(--card);
+button,input,textarea,select {font:inherit}
+button {cursor:pointer}
+header {
+  position:sticky;top:0;z-index:5;
+  background:rgba(255,250,244,.95);
+  backdrop-filter:blur(12px);
   border-bottom:1px solid var(--line);
+  padding:15px 18px;
 }
-.wrap{max-width:850px;margin:auto}
-.brand{font-size:25px;font-weight:800;color:var(--brown)}
-.brand span{color:#c49a6c}
-header p{margin:7px 0 0;color:var(--muted)}
-main{padding:20px 15px}
-.hero{
-  padding:23px 18px;border-radius:20px;
-  background:#eee0d1;margin-bottom:18px;
+.nav {
+  max-width:1050px;margin:auto;
+  display:flex;align-items:center;gap:12px;
 }
-.hero h1{font-size:26px;margin:0 0 9px}
-.hero p{line-height:1.5;margin:0;color:#6c5142}
-.search{
-  width:100%;padding:14px;border:1px solid var(--line);
-  border-radius:12px;background:white;font-size:16px;
-  margin-bottom:14px;outline-color:var(--brown);
+.logo {
+  width:46px;height:46px;border-radius:15px;
+  display:grid;place-items:center;
+  color:white;background:var(--coffee);font-size:24px;
 }
-.filters{display:flex;gap:8px;overflow:auto;padding-bottom:14px}
-.filters button{
-  flex-shrink:0;border:1px solid var(--line);
-  padding:9px 14px;border-radius:22px;
-  background:white;color:var(--brown);
+.brand {flex:1;min-width:0}
+.brand h1 {font-size:20px;margin:0}
+.brand p {margin:2px 0 0;color:var(--muted);font-size:12px}
+.status {font-size:11px;color:var(--muted);text-align:right}
+main {max-width:1050px;margin:auto;padding:22px 16px 50px}
+.hero {
+  background:linear-gradient(135deg,#634333,#a8795e);
+  color:white;border-radius:24px;padding:25px 22px;
+  position:relative;overflow:hidden;
 }
-.filters button.active{background:var(--brown);color:white}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.file{
-  min-width:0;background:var(--card);border:1px solid var(--line);
-  padding:14px;border-radius:16px;
+.hero:after {
+  content:"☕";position:absolute;right:16px;bottom:-20px;
+  font-size:110px;opacity:.12;pointer-events:none;
 }
-.file-icon{font-size:30px}
-.file h3{font-size:15px;overflow-wrap:anywhere;margin:12px 0 6px}
-.meta{font-size:12px;color:var(--muted);margin-bottom:13px}
-.actions{display:grid;gap:7px}
-.actions a,.actions button{
-  display:block;text-align:center;text-decoration:none;
-  border:0;border-radius:9px;padding:10px 5px;
-  font-size:13px;cursor:pointer;
+.hero h2 {font-size:27px;margin:0 0 8px}
+.hero p {margin:0;line-height:1.6;color:#f7e9df;max-width:550px}
+.stats {display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.stat {
+  border:1px solid #ffffff45;background:#ffffff14;
+  padding:10px 14px;border-radius:13px;min-width:100px;
 }
-.download{background:var(--brown);color:white}
-.share{background:#efe4d8;color:var(--brown)}
-.empty{grid-column:1/-1;text-align:center;padding:30px;color:var(--muted)}
-.admin{
-  margin-top:25px;padding:18px;background:var(--card);
-  border:1px solid var(--line);border-radius:16px;
+.stat strong {display:block;font-size:20px}
+.stat span {font-size:11px;color:#f7e9df}
+.layout {display:grid;grid-template-columns:330px minmax(0,1fr);gap:20px;margin-top:22px}
+.panel {
+  background:white;border:1px solid var(--line);
+  border-radius:20px;padding:18px;min-width:0;
 }
-.admin h2{font-size:19px}
-.admin input,.admin select{
-  width:100%;padding:12px;margin:6px 0;
-  border:1px solid var(--line);border-radius:9px;
-  background:white;font-size:15px;
+.panel h3 {font-size:17px;margin:0 0 15px}
+.field {display:block;margin-bottom:13px}
+.field span {display:block;font-size:12px;font-weight:700;margin-bottom:6px}
+.field input,.field textarea,.field select,.search {
+  width:100%;padding:12px;border:1px solid var(--line);
+  background:#fffcf8;color:var(--dark);border-radius:11px;
+  outline:none;
 }
-.primary{
-  background:var(--brown);color:white;border:0;
-  padding:12px;border-radius:9px;width:100%;margin-top:8px;
+.field input:focus,.field textarea:focus,.field select:focus,.search:focus {
+  border-color:var(--accent);box-shadow:0 0 0 3px #a8785d20;
 }
-.note{font-size:12px;line-height:1.5;color:var(--muted)}
-footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
-@media(min-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.field textarea {resize:vertical;min-height:70px}
+.btn {
+  border:0;border-radius:11px;padding:11px 14px;
+  font-weight:700;display:inline-flex;align-items:center;
+  justify-content:center;gap:7px;
+}
+.primary {background:var(--coffee);color:white}
+.secondary {background:var(--paper);color:var(--dark)}
+.outline {background:white;color:var(--coffee);border:1px solid var(--line)}
+.danger {background:#fff0ed;color:var(--danger)}
+.btn:disabled {opacity:.5;cursor:not-allowed}
+.full {width:100%}
+.preview {
+  display:none;width:100%;max-height:200px;object-fit:contain;
+  border-radius:12px;background:var(--paper);margin:8px 0 12px;
+}
+.filebox {
+  display:block;padding:15px;border:1px dashed #c7a58c;
+  background:#fffaf5;border-radius:13px;text-align:center;
+  color:var(--coffee);font-size:13px;
+}
+.filebox input {display:none}
+.form-note {font-size:11px;color:var(--muted);line-height:1.5;margin:10px 0 0}
+.library-head {display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.library-head h3 {margin:0}
+.search {max-width:230px;padding:10px 12px}
+.filters {display:flex;gap:7px;flex-wrap:wrap;margin:0 0 16px}
+.chip {border:1px solid var(--line);background:white;color:var(--muted);border-radius:99px;padding:7px 12px;font-size:12px}
+.chip.active {background:var(--coffee);border-color:var(--coffee);color:white}
+.grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.item {border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#fffdfb;min-width:0}
+.thumb {
+  height:145px;background:var(--paper);display:grid;place-items:center;
+  overflow:hidden;color:var(--muted);font-size:36px;
+}
+.thumb img {width:100%;height:100%;object-fit:cover}
+.item-body {padding:12px}
+.item h4 {font-size:14px;margin:0 0 7px;overflow-wrap:anywhere}
+.meta {font-size:11px;color:var(--muted);margin-bottom:8px}
+.url {font-size:11px;color:var(--accent);display:block;overflow-wrap:anywhere;line-height:1.5;margin-bottom:12px}
+.actions {display:flex;gap:6px;flex-wrap:wrap}
+.actions .btn {font-size:11px;padding:8px 9px;flex:1}
+.empty {padding:35px 12px;text-align:center;color:var(--muted);grid-column:1/-1}
+.empty b {display:block;font-size:30px;margin-bottom:8px}
+.notice {display:none;padding:12px 14px;border-radius:12px;margin:15px 0;font-size:13px;overflow-wrap:anywhere}
+.notice.show {display:block}
+.notice.ok {background:#eaf5e9;color:#285b2c}
+.notice.bad {background:#fff0ed;color:#96392e}
+.loading {padding:25px;text-align:center;color:var(--muted);grid-column:1/-1}
+footer {text-align:center;color:var(--muted);font-size:11px;padding:25px 10px}
+@media(max-width:760px) {
+ .layout {grid-template-columns:1fr}
+ .hero h2 {font-size:24px}
+ .library-head {align-items:stretch;flex-direction:column}
+ .search {max-width:none}
+}
+@media(max-width:390px) {
+ main {padding:15px 11px 35px}
+ .grid {grid-template-columns:1fr}
+ .panel {padding:14px}
+ .status {font-size:10px}
+}
 </style>
 </head>
 <body>
 <header>
-  <div class="wrap">
-    <div class="brand">☁ Nova<span>Share</span></div>
-    <p>Iyong files, madaling ibahagi.</p>
+  <div class="nav">
+    <div class="logo">☕</div>
+    <div class="brand">
+      <h1>NovaBackup</h1>
+      <p>Your personal backup library</p>
+    </div>
+    <div class="status" id="status">Sinusuri ang backend…</div>
   </div>
 </header>
 
-<main class="wrap">
+<main>
   <section class="hero">
-    <h1>Hanapin ang iyong file.</h1>
-    <p>Mga APK, videos, music, documents at iba pang files.</p>
+    <h2>Itago ang mahahalaga. 🤎</h2>
+    <p>Isang lugar para sa iyong mga link at larawan. Organisado, madaling hanapin, at laging abot-kamay.</p>
+    <div class="stats">
+      <div class="stat"><strong id="total">0</strong><span>Backup items</span></div>
+      <div class="stat"><strong id="images">0</strong><span>Mga larawan</span></div>
+      <div class="stat"><strong id="links">0</strong><span>Mga link</span></div>
+    </div>
   </section>
 
-  <input id="search" class="search"
-    placeholder="🔎 Maghanap ng file..." aria-label="Maghanap ng file">
+  <div id="notice" class="notice"></div>
 
-  <div class="filters" id="filters">
-    <button class="active" data-type="Lahat">Lahat</button>
-    <button data-type="APK">APK</button>
-    <button data-type="MP4">MP4</button>
-    <button data-type="PDF">PDF</button>
-    <button data-type="ZIP">ZIP</button>
-    <button data-type="MP3">MP3</button>
-    <button data-type="Iba pa">Iba pa</button>
-  </div>
+  <section class="layout">
+    <div class="panel">
+      <h3>＋ Magdagdag ng backup</h3>
 
-  <section class="grid" id="files"></section>
+      <form id="backupForm">
+        <label class="field">
+          <span>Pangalan ng backup *</span>
+          <input id="name" required maxlength="150" placeholder="Hal. Paborito kong larawan">
+        </label>
 
-  <section class="admin">
-    <h2>＋ Magdagdag ng file</h2>
-    <p class="note">Ilagay ang direct sharing link ng file na nasa Google Drive o ibang file host.</p>
-    <input id="fileName" placeholder="Pangalan ng file">
-    <select id="fileType">
-      <option>APK</option><option>MP4</option><option>PDF</option>
-      <option>ZIP</option><option>MP3</option><option>Iba pa</option>
-    </select>
-    <input id="fileSize" placeholder="Laki ng file (hal. 25 MB)">
-    <input id="fileUrl" type="url" placeholder="https://... download link">
-    <button class="primary" id="addFile">Idagdag sa listahan</button>
-    <p class="note">Demo panel lamang ito. Ang idinagdag na files ay pansamantala sa page na ito at hindi pa naka-save online. Huwag maglagay ng private o sensitibong files sa public links.</p>
+        <label class="field">
+          <span>Kategorya</span>
+          <select id="category">
+            <option>General</option>
+            <option>Personal</option>
+            <option>Work</option>
+            <option>Images</option>
+            <option>Videos</option>
+            <option>Documents</option>
+            <option>Favorites</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Link (para sa link backup)</span>
+          <input id="link" type="url" placeholder="https://example.com/file">
+        </label>
+
+        <label class="field">
+          <span>Notes (opsyonal)</span>
+          <textarea id="notes" maxlength="1000" placeholder="Dagdag na detalye…"></textarea>
+        </label>
+
+        <label class="filebox">
+          <span style="font-size:25px">▧</span><br>
+          <b>Import Image</b><br>
+          <span style="font-size:11px">Pumili mula sa gallery ng cellphone</span>
+          <input id="imageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif">
+        </label>
+
+        <img id="preview" class="preview" alt="Image preview">
+
+        <button id="saveBtn" class="btn primary full" type="submit" style="margin-top:14px">☁ Save Backup</button>
+        <button id="clearBtn" class="btn secondary full" type="button" style="margin-top:8px">I-clear ang form</button>
+        <p class="form-note">Hanggang 5 MB bawat larawan. Ang mga larawan ay ise-save sa Google Drive; ang impormasyon ay ise-save sa Google Sheets.</p>
+      </form>
+    </div>
+
+    <div class="panel">
+      <div class="library-head">
+        <h3>📚 Aking mga backup</h3>
+        <input id="search" class="search" placeholder="⌕ Maghanap…" aria-label="Maghanap ng backup">
+      </div>
+      <div class="filters">
+        <button class="chip active" data-filter="All">Lahat</button>
+        <button class="chip" data-filter="Image">Mga larawan</button>
+        <button class="chip" data-filter="Link">Mga link</button>
+      </div>
+      <div id="grid" class="grid">
+        <div class="loading">Kinukuha ang iyong mga backup…</div>
+      </div>
+      <button id="refresh" class="btn outline full" style="margin-top:15px">↻ I-refresh ang listahan</button>
+    </div>
   </section>
+  <footer>NovaBackup · Made with ☕ and care</footer>
 </main>
 
-<footer>© 2026 NovaShare · Share responsibly</footer>
-
 <script>
-const icons = {
-  APK:"📱",MP4:"🎬",PDF:"📄",ZIP:"🗜️",MP3:"🎵","Iba pa":"📁"
-};
+const API = "https://script.google.com/macros/s/AKfycbzNS--eny5u5kqlZf_PmwWTuGDnMbGm3QalC4rhcxXRwaRke5yZWRKWXB1vWeMXh6fVsw/exec";
 
-let selectedType = "Lahat";
-let fileList = [];
+const $ = id => document.getElementById(id);
+let backups = [];
+let currentFilter = "All";
+let selectedImage = null;
+let noticeTimer;
 
-const filesEl = document.getElementById("files");
+function showNotice(message, type="ok") {
+  const box = $("notice");
+  box.textContent = message;
+  box.className = "notice show " + type;
+  clearTimeout(noticeTimer);
+  noticeTimer = setTimeout(() => box.className = "notice", 6500);
+}
 
-function renderFiles(){
-  const q = document.getElementById("search").value.toLowerCase().trim();
-  const matches = fileList.filter(f =>
-    (selectedType === "Lahat" || f.type === selectedType) &&
-    f.name.toLowerCase().includes(q)
-  );
+async function getJSON(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error("HTTP " + response.status);
+  return response.json();
+}
 
-  filesEl.replaceChildren();
+// text/plain ang ginagamit upang maiwasan ang JSON preflight request.
+async function postJSON(payload) {
+  const response = await fetch(API, {
+    method: "POST",
+    headers: {"Content-Type": "text/plain;charset=utf-8"},
+    body: JSON.stringify(payload),
+    redirect: "follow"
+  });
+  if (!response.ok) throw new Error("HTTP " + response.status);
+  return response.json();
+}
 
-  if(!matches.length){
-    const empty = document.createElement("div");
-    empty.className = "empty";
-    empty.textContent = "Wala pang files. Magdagdag ng link sa ibaba.";
-    filesEl.appendChild(empty);
+async function checkBackend() {
+  try {
+    const data = await getJSON(API + "?action=ping");
+    if (!data.success) throw new Error(data.error || "Backend error");
+    $("status").textContent = "● Backend online";
+    $("status").style.color = "#397347";
+  } catch (error) {
+    $("status").textContent = "● Hindi makakonekta";
+    $("status").style.color = "#b74336";
+    showNotice("Hindi makakonekta sa backend. Suriin ang deployment at access settings ng Apps Script. Detalye: " + error.message, "bad");
+  }
+}
+
+async function loadBackups() {
+  $("grid").innerHTML = '<div class="loading">Kinukuha ang iyong mga backup…</div>';
+  try {
+    const data = await getJSON(API + "?action=list&t=" + Date.now());
+    if (!data.success) throw new Error(data.error || "Hindi makuha ang listahan.");
+    backups = Array.isArray(data.backups) ? data.backups : [];
+    render();
+  } catch (error) {
+    $("grid").innerHTML = '<div class="empty"><b>☕</b>Hindi ma-load ang mga backup.<br>Suriin ang koneksiyon at Apps Script deployment.</div>';
+    showNotice("Pagkuha ng backup ay nabigo: " + error.message, "bad");
+  }
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[char]));
+}
+
+function safeURL(value) {
+  try {
+    const url = new URL(value);
+    return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+  } catch (_) {
+    return "";
+  }
+}
+
+function imageURL(item) {
+  if (item.imageFileId) {
+    return "https://drive.google.com/uc?export=view&id=" +
+      encodeURIComponent(item.imageFileId);
+  }
+  return "";
+}
+
+function render() {
+  const query = $("search").value.trim().toLowerCase();
+  const filtered = backups.filter(item => {
+    const matchesFilter = currentFilter === "All" ||
+      (currentFilter === "Image" ? item.type === "Image" : item.type !== "Image");
+    const haystack = [item.name, item.link, item.category, item.notes, item.type]
+      .join(" ").toLowerCase();
+    return matchesFilter && haystack.includes(query);
+  });
+
+  $("total").textContent = backups.length;
+  $("images").textContent = backups.filter(x => x.type === "Image").length;
+  $("links").textContent = backups.filter(x => x.type !== "Image").length;
+
+  if (!filtered.length) {
+    $("grid").innerHTML = '<div class="empty"><b>☕</b>Wala pang tugmang backup.<br>Magdagdag ng link o mag-import ng larawan.</div>';
     return;
   }
 
-  matches.forEach(f => {
-    const card = document.createElement("article");
-    card.className = "file";
+  $("grid").innerHTML = filtered.map(item => {
+    const img = imageURL(item);
+    const url = safeURL(item.link);
+    const download = safeURL(item.downloadUrl) || url;
+    const preview = item.type === "Image" && img
+      ? '<img src="' + escapeHTML(img) + '" alt="" loading="lazy" onerror="this.parentElement.textContent=\'🖼️\'">'
+      : '<span>' + (item.type === "Image" ? "🖼️" : "🔗") + '</span>';
+    const date = item.date ? escapeHTML(String(item.date).slice(0,10)) : "";
+    return `
+      <article class="item">
+        <div class="thumb">${preview}</div>
+        <div class="item-body">
+          <h4>${escapeHTML(item.name || "Walang pangalan")}</h4>
+          <div class="meta">${escapeHTML(item.type || "Link")} · ${escapeHTML(item.category || "General")} ${date ? "· " + date : ""}</div>
+          <span class="url">${escapeHTML(item.link || "")}</span>
+          <div class="actions">
+            ${url ? '<a class="btn primary" href="' + escapeHTML(download) + '" target="_blank" rel="noopener noreferrer">⬇ Download</a>' : ""}
+            ${url ? '<a class="btn secondary" href="' + escapeHTML(url) + '" target="_blank" rel="noopener noreferrer">↗ Buksan</a>' : ""}
+            <button class="btn danger" data-delete="${escapeHTML(item.id)}">Tanggalin</button>
+          </div>
+        </div>
+      </article>`;
+  }).join("");
 
-    const icon = document.createElement("div");
-    icon.className = "file-icon";
-    icon.textContent = icons[f.type] || "📁";
-
-    const title = document.createElement("h3");
-    title.textContent = f.name;
-
-    const meta = document.createElement("div");
-    meta.className = "meta";
-    meta.textContent = f.type + " · " + (f.size || "Hindi tinukoy");
-
-    const actions = document.createElement("div");
-    actions.className = "actions";
-
-    const download = document.createElement("a");
-    download.className = "download";
-    download.href = f.url;
-    download.target = "_blank";
-    download.rel = "noopener noreferrer";
-    download.textContent = "Buksan / Download";
-
-    const share = document.createElement("button");
-    share.className = "share";
-    share.textContent = "Kopyahin ang link";
-    share.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(f.url);
-        share.textContent = "Nakopya na!";
-      } catch {
-        window.prompt("Kopyahin ang link:", f.url);
-      }
-    });
-
-    actions.append(download, share);
-    card.append(icon, title, meta, actions);
-    filesEl.appendChild(card);
+  document.querySelectorAll("[data-delete]").forEach(button => {
+    button.addEventListener("click", () => removeBackup(button.dataset.delete));
   });
 }
 
-document.getElementById("search").addEventListener("input", renderFiles);
+$("imageFile").addEventListener("change", event => {
+  const file = event.target.files[0];
+  selectedImage = null;
+  $("preview").style.display = "none";
 
-document.getElementById("filters").addEventListener("click", e => {
-  const button = e.target.closest("button[data-type]");
-  if(!button) return;
-  selectedType = button.dataset.type;
-  document.querySelectorAll("#filters button").forEach(b =>
-    b.classList.toggle("active", b === button)
-  );
-  renderFiles();
-});
+  if (!file) return;
 
-document.getElementById("addFile").addEventListener("click", () => {
-  const name = document.getElementById("fileName").value.trim();
-  const type = document.getElementById("fileType").value;
-  const size = document.getElementById("fileSize").value.trim();
-  const url = document.getElementById("fileUrl").value.trim();
-
-  if(!name || !url){
-    alert("Ilagay ang pangalan at link ng file.");
+  if (!/^image\/(jpeg|png|webp|gif)$/.test(file.type)) {
+    showNotice("JPEG, PNG, WEBP o GIF image lamang ang puwede.", "bad");
+    event.target.value = "";
     return;
   }
+  if (file.size > 5 * 1024 * 1024) {
+    showNotice("Lampas sa 5 MB ang larawan. Pumili ng mas maliit na file.", "bad");
+    event.target.value = "";
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    selectedImage = reader.result;
+    $("preview").src = reader.result;
+    $("preview").style.display = "block";
+  };
+  reader.onerror = () => showNotice("Hindi mabasa ang napiling larawan.", "bad");
+  reader.readAsDataURL(file);
+});
+
+$("backupForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const name = $("name").value.trim();
+  const link = $("link").value.trim();
+  const category = $("category").value;
+  const notes = $("notes").value.trim();
+
+  if (!name) {
+    showNotice("Ilagay ang pangalan ng backup.", "bad");
+    return;
+  }
+  if (!selectedImage && !link) {
+    showNotice("Mag-import ng larawan o maglagay ng link.", "bad");
+    return;
+  }
+  if (link && !safeURL(link)) {
+    showNotice("Hindi valid ang link. Gumamit ng http:// o https://", "bad");
+    return;
+  }
+
+  const button = $("saveBtn");
+  button.disabled = true;
+  button.textContent = "⏳ Sine-save…";
 
   try {
-    const parsed = new URL(url);
-    if(parsed.protocol !== "https:"){
-      alert("HTTPS links lamang ang pinapayagan.");
-      return;
+    let result;
+    if (selectedImage) {
+      result = await postJSON({
+        action: "uploadImage",
+        name, category, notes,
+        imageBase64: selectedImage
+      });
+    } else {
+      result = await postJSON({
+        action: "saveLink",
+        name, link, category, notes,
+        type: "Link"
+      });
     }
-  } catch {
-    alert("Hindi valid ang link.");
-    return;
-  }
 
-  fileList.unshift({name,type,size,url});
-  document.getElementById("fileName").value = "";
-  document.getElementById("fileSize").value = "";
-  document.getElementById("fileUrl").value = "";
-  selectedType = "Lahat";
-  document.querySelectorAll("#filters button").forEach(b =>
-    b.classList.toggle("active", b.dataset.type === "Lahat")
-  );
-  renderFiles();
+    if (!result.success) throw new Error(result.error || "Hindi na-save.");
+
+    showNotice(result.message || "Matagumpay na na-save!", "ok");
+    clearForm();
+    await loadBackups();
+  } catch (error) {
+    showNotice("Hindi na-save ang backup. " + error.message +
+      ". Suriin ang Apps Script permissions at deployment.", "bad");
+  } finally {
+    button.disabled = false;
+    button.textContent = "☁ Save Backup";
+  }
 });
 
-renderFiles();
+async function removeBackup(id) {
+  const item = backups.find(x => x.id === id);
+  if (!item || !confirm('Sigurado ka bang tatanggalin ang "' + item.name + '"?')) return;
+
+  try {
+    const result = await postJSON({action:"delete", id});
+    if (!result.success) throw new Error(result.error || "Hindi natanggal.");
+    showNotice("Natanggal ang backup record.", "ok");
+    await loadBackups();
+  } catch (error) {
+    showNotice("Hindi natanggal: " + error.message, "bad");
+  }
+}
+
+function clearForm() {
+  $("backupForm").reset();
+  selectedImage = null;
+  $("preview").removeAttribute("src");
+  $("preview").style.display = "none";
+}
+
+$("clearBtn").addEventListener("click", clearForm);
+$("refresh").addEventListener("click", loadBackups);
+$("search").addEventListener("input", render);
+
+document.querySelectorAll("[data-filter]").forEach(button => {
+  button.addEventListener("click", () => {
+    currentFilter = button.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach(b => b.classList.remove("active"));
+    button.classList.add("active");
+    render();
+  });
+});
+
+checkBackend();
+loadBackups();
 </script>
 </body>
 </html>
