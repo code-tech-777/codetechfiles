@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="tl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NovaShare</title>
+<style>
+:root {
+  --bg:#fdf8f2;
+  --card:#fffdf9;
+  --brown:#795548;
+  --text:#382b25;
+  --muted:#89776b;
+  --line:#eaded2;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,sans-serif;
+}
+header{
+  padding:22px 16px;background:var(--card);
+  border-bottom:1px solid var(--line);
+}
+.wrap{max-width:850px;margin:auto}
+.brand{font-size:25px;font-weight:800;color:var(--brown)}
+.brand span{color:#c49a6c}
+header p{margin:7px 0 0;color:var(--muted)}
+main{padding:20px 15px}
+.hero{
+  padding:23px 18px;border-radius:20px;
+  background:#eee0d1;margin-bottom:18px;
+}
+.hero h1{font-size:26px;margin:0 0 9px}
+.hero p{line-height:1.5;margin:0;color:#6c5142}
+.search{
+  width:100%;padding:14px;border:1px solid var(--line);
+  border-radius:12px;background:white;font-size:16px;
+  margin-bottom:14px;outline-color:var(--brown);
+}
+.filters{display:flex;gap:8px;overflow:auto;padding-bottom:14px}
+.filters button{
+  flex-shrink:0;border:1px solid var(--line);
+  padding:9px 14px;border-radius:22px;
+  background:white;color:var(--brown);
+}
+.filters button.active{background:var(--brown);color:white}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.file{
+  min-width:0;background:var(--card);border:1px solid var(--line);
+  padding:14px;border-radius:16px;
+}
+.file-icon{font-size:30px}
+.file h3{font-size:15px;overflow-wrap:anywhere;margin:12px 0 6px}
+.meta{font-size:12px;color:var(--muted);margin-bottom:13px}
+.actions{display:grid;gap:7px}
+.actions a,.actions button{
+  display:block;text-align:center;text-decoration:none;
+  border:0;border-radius:9px;padding:10px 5px;
+  font-size:13px;cursor:pointer;
+}
+.download{background:var(--brown);color:white}
+.share{background:#efe4d8;color:var(--brown)}
+.empty{grid-column:1/-1;text-align:center;padding:30px;color:var(--muted)}
+.admin{
+  margin-top:25px;padding:18px;background:var(--card);
+  border:1px solid var(--line);border-radius:16px;
+}
+.admin h2{font-size:19px}
+.admin input,.admin select{
+  width:100%;padding:12px;margin:6px 0;
+  border:1px solid var(--line);border-radius:9px;
+  background:white;font-size:15px;
+}
+.primary{
+  background:var(--brown);color:white;border:0;
+  padding:12px;border-radius:9px;width:100%;margin-top:8px;
+}
+.note{font-size:12px;line-height:1.5;color:var(--muted)}
+footer{text-align:center;padding:25px;color:var(--muted);font-size:12px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">☁ Nova<span>Share</span></div>
+    <p>Iyong files, madaling ibahagi.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>Hanapin ang iyong file.</h1>
+    <p>Mga APK, videos, music, documents at iba pang files.</p>
+  </section>
+
+  <input id="search" class="search"
+    placeholder="🔎 Maghanap ng file..." aria-label="Maghanap ng file">
+
+  <div class="filters" id="filters">
+    <button class="active" data-type="Lahat">Lahat</button>
+    <button data-type="APK">APK</button>
+    <button data-type="MP4">MP4</button>
+    <button data-type="PDF">PDF</button>
+    <button data-type="ZIP">ZIP</button>
+    <button data-type="MP3">MP3</button>
+    <button data-type="Iba pa">Iba pa</button>
+  </div>
+
+  <section class="grid" id="files"></section>
+
+  <section class="admin">
+    <h2>＋ Magdagdag ng file</h2>
+    <p class="note">Ilagay ang direct sharing link ng file na nasa Google Drive o ibang file host.</p>
+    <input id="fileName" placeholder="Pangalan ng file">
+    <select id="fileType">
+      <option>APK</option><option>MP4</option><option>PDF</option>
+      <option>ZIP</option><option>MP3</option><option>Iba pa</option>
+    </select>
+    <input id="fileSize" placeholder="Laki ng file (hal. 25 MB)">
+    <input id="fileUrl" type="url" placeholder="https://... download link">
+    <button class="primary" id="addFile">Idagdag sa listahan</button>
+    <p class="note">Demo panel lamang ito. Ang idinagdag na files ay pansamantala sa page na ito at hindi pa naka-save online. Huwag maglagay ng private o sensitibong files sa public links.</p>
+  </section>
+</main>
+
+<footer>© 2026 NovaShare · Share responsibly</footer>
+
+<script>
+const icons = {
+  APK:"📱",MP4:"🎬",PDF:"📄",ZIP:"🗜️",MP3:"🎵","Iba pa":"📁"
+};
+
+let selectedType = "Lahat";
+let fileList = [];
+
+const filesEl = document.getElementById("files");
+
+function renderFiles(){
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  const matches = fileList.filter(f =>
+    (selectedType === "Lahat" || f.type === selectedType) &&
+    f.name.toLowerCase().includes(q)
+  );
+
+  filesEl.replaceChildren();
+
+  if(!matches.length){
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "Wala pang files. Magdagdag ng link sa ibaba.";
+    filesEl.appendChild(empty);
+    return;
+  }
+
+  matches.forEach(f => {
+    const card = document.createElement("article");
+    card.className = "file";
+
+    const icon = document.createElement("div");
+    icon.className = "file-icon";
+    icon.textContent = icons[f.type] || "📁";
+
+    const title = document.createElement("h3");
+    title.textContent = f.name;
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = f.type + " · " + (f.size || "Hindi tinukoy");
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    const download = document.createElement("a");
+    download.className = "download";
+    download.href = f.url;
+    download.target = "_blank";
+    download.rel = "noopener noreferrer";
+    download.textContent = "Buksan / Download";
+
+    const share = document.createElement("button");
+    share.className = "share";
+    share.textContent = "Kopyahin ang link";
+    share.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(f.url);
+        share.textContent = "Nakopya na!";
+      } catch {
+        window.prompt("Kopyahin ang link:", f.url);
+      }
+    });
+
+    actions.append(download, share);
+    card.append(icon, title, meta, actions);
+    filesEl.appendChild(card);
+  });
+}
+
+document.getElementById("search").addEventListener("input", renderFiles);
+
+document.getElementById("filters").addEventListener("click", e => {
+  const button = e.target.closest("button[data-type]");
+  if(!button) return;
+  selectedType = button.dataset.type;
+  document.querySelectorAll("#filters button").forEach(b =>
+    b.classList.toggle("active", b === button)
+  );
+  renderFiles();
+});
+
+document.getElementById("addFile").addEventListener("click", () => {
+  const name = document.getElementById("fileName").value.trim();
+  const type = document.getElementById("fileType").value;
+  const size = document.getElementById("fileSize").value.trim();
+  const url = document.getElementById("fileUrl").value.trim();
+
+  if(!name || !url){
+    alert("Ilagay ang pangalan at link ng file.");
+    return;
+  }
+
+  try {
+    const parsed = new URL(url);
+    if(parsed.protocol !== "https:"){
+      alert("HTTPS links lamang ang pinapayagan.");
+      return;
+    }
+  } catch {
+    alert("Hindi valid ang link.");
+    return;
+  }
+
+  fileList.unshift({name,type,size,url});
+  document.getElementById("fileName").value = "";
+  document.getElementById("fileSize").value = "";
+  document.getElementById("fileUrl").value = "";
+  selectedType = "Lahat";
+  document.querySelectorAll("#filters button").forEach(b =>
+    b.classList.toggle("active", b.dataset.type === "Lahat")
+  );
+  renderFiles();
+});
+
+renderFiles();
+</script>
+</body>
+</html>
